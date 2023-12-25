@@ -1,6 +1,5 @@
 export class ChatClient {
-  constructor(divNode, host = "http://example.com:8000")
-  {
+  constructor(divNode, host = "https://example.com:8000") {
     this.divNode = divNode;
     this.chatForm = this.divNode.querySelector("#chatForm");
     this.chatForm.addEventListener("submit", this.sendMessage);
@@ -12,7 +11,7 @@ export class ChatClient {
     })
 
     this.messageInput = this.divNode.querySelector("#messageText");
-    this.messagesArea =  this.divNode.querySelector("#messages");
+    this.messagesArea = this.divNode.querySelector("#messages");
 
     const wsUrl = new URL(host);
     wsUrl.protocol = "ws";
@@ -28,27 +27,27 @@ export class ChatClient {
     historyUrl.pathname = "/history";
     fetch(historyUrl.toString()).then(response => response.json()).then(messages => {
       for (const message of messages) {
-        this.handleMessage(message);
+        this.displayMessage(message);
       }
     })
   }
 
   receiveMessage = event => {
     const message = JSON.parse(event.data)
-    this.handleMessage(message);
+    this.displayMessage(message);
   };
 
-  handleMessage = message => {
+  displayMessage = message => {
     const timestamp = new Date(message.timestamp).toLocaleTimeString();
     const content = `[${timestamp}] ${message.author}: ${message.message}\n`;
     this.messagesArea.textContent += content;
     this.messagesArea.scrollTop = this.messagesArea.scrollHeight;
   };
 
-
-
   sendMessage = event => {
-    const data = {"author": this.authorInput.value, "message": this.messageInput.value};
+    const data = {
+      "author": this.authorInput.value, "message": this.messageInput.value
+    };
     this.ws.send(JSON.stringify(data));
     this.messageInput.value = "";
     event.preventDefault();
